@@ -19,15 +19,13 @@ def show(name, array):
     cv2.waitKey(1)
 
 
-def makeGaussian(size, fwhm = 3, center=None):
+def makeGaussian(size, fwhm, center):
     x = np.arange(0, size, 1, float)
     y = x[:,np.newaxis]
     
-    if center is None:
-        x0 = y0 = size // 2
-    else:
-        x0 = center[0]
-        y0 = center[1]
+
+    x0 = center[0]
+    y0 = center[1]
     
     return np.exp(-4*np.log(2) * ((x-x0)**2 + (y-y0)**2) / fwhm**2)
 
@@ -66,7 +64,7 @@ target_image = target_image[0:SIZE, 100:100+SIZE]/255.0
 show("target", target_image)
 
 
-for tool in ["Shiwa","CMA","TBPSA"]:
+for tool in ["SPSA", "cGA", "Shiwa","CMA","TBPSA"]:
 
     optim = ng.optimizers.registry[tool](parametrization=128, budget=budget)
     optim.parametrization.set_bounds(-4, 4)
@@ -77,7 +75,7 @@ for tool in ["Shiwa","CMA","TBPSA"]:
         y1 = gen_image(*x1.args)
         optim.tell(x1, y1)
 
-        if (iter % 20 == 0):
+        if (iter % 300 == 0):
             print(iter, y1)
             recommendation = optim.recommend()
             best = build_image(*recommendation.args)
