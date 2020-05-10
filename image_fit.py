@@ -55,7 +55,7 @@ def gen_image(x):
     return err_v
 
 
-budget = 4400
+budget = 8400
 
 target_image = skimage.data.astronaut()[:,:,0]
 
@@ -64,9 +64,9 @@ target_image = target_image[0:SIZE, 100:100+SIZE]/255.0
 show("target", target_image)
 
 
-for tool in ["SPSA", "cGA", "Shiwa","CMA","TBPSA"]:
+for tool in ["DoubleFastGADiscreteOnePlusOne","Shiwa","CMA","TBPSA"]:
 
-    optim = ng.optimizers.registry[tool](parametrization=128, budget=budget)
+    optim = ng.optimizers.registry[tool](parametrization=64, budget=budget)
     optim.parametrization.set_bounds(-4, 4)
 
     for iter in range(budget ):
@@ -76,15 +76,11 @@ for tool in ["SPSA", "cGA", "Shiwa","CMA","TBPSA"]:
         optim.tell(x1, y1)
 
         if (iter % 300 == 0):
-            print(iter, y1)
             recommendation = optim.recommend()
+            print(tool, iter, gen_image(*recommendation.args))
             best = build_image(*recommendation.args)
             show("best", best)
             cv2.waitKey(1)
     
-    recommendation = optim.recommend()
-    best = build_image(*recommendation.args)
-    show("best", best)
-    print("* ", tool, " provides a vector of parameters with test error ", gen_image(*recommendation.args))
 cv2.waitKey(0)
 
