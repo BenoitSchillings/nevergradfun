@@ -36,9 +36,9 @@ def build_image(inputs):
     idx = 0
     array = np.zeros((SIZE,SIZE))
     for i in range(count):
-        x = (inputs[idx]) * SIZE
-        y = (inputs[idx + 1]) * SIZE
-        size = 1 + np.abs(inputs[idx + 2]) * 64.0
+        x = 128 + (inputs[idx]) * (SIZE/4.0)
+        y = 128 + (inputs[idx + 1]) * (SIZE/4.0)
+        size = 1 + np.abs(inputs[idx + 2]) * 32.0
         val = 0.3 * (inputs[idx + 3])
         idx = idx + 4
 
@@ -55,7 +55,7 @@ def gen_image(x):
     return err_v
 
 
-budget = 8400
+budget = 114400
 
 target_image = skimage.data.astronaut()[:,:,0]
 
@@ -64,10 +64,10 @@ target_image = target_image[0:SIZE, 100:100+SIZE]/255.0
 show("target", target_image)
 
 
-for tool in ["DoubleFastGADiscreteOnePlusOne","Shiwa","CMA","TBPSA"]:
+for tool in ["DoubleFastGADiscreteOnePlusOne","CMA","TBPSA","Shiwa"]:
 
-    optim = ng.optimizers.registry[tool](parametrization=64, budget=budget)
-    optim.parametrization.set_bounds(-4, 4)
+    optim = ng.optimizers.registry[tool](parametrization=1024, budget=budget, num_workers=10)
+    #optim.parametrization.set_bounds(-4, 4)
 
     for iter in range(budget ):
 
